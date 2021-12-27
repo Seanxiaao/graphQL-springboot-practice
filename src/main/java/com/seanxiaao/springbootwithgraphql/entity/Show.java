@@ -6,7 +6,6 @@ public class Show {
 
     private String title;
     private int releaseYear;
-    private List<Actor> actors;
 
     public Show(String title, int releaseYear) {
         this.title = title;
@@ -21,11 +20,4 @@ public class Show {
         return releaseYear;
     }
 
-    public List<Actor> getActors() {
-        return actors;
-    }
-
-    public void setActors(List<Actor> actors) {
-        this.actors = actors;
-    }
 }

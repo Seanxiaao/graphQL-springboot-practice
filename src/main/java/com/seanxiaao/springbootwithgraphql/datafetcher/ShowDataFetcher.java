@@ -6,6 +6,7 @@ import com.seanxiaao.springbootwithgraphql.entity.Actor;
 import com.seanxiaao.springbootwithgraphql.entity.Show;
 import com.seanxiaao.springbootwithgraphql.service.ActorService;
 import com.seanxiaao.springbootwithgraphql.service.ShowService;
+import graphql.execution.DataFetcherResult;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -21,14 +22,15 @@ public class ShowDataFetcher {
     @Resource
     private ActorService actorService;
 
+
     @Resource
     private ShowService showService;
 
     /**
-     * @DgsQuery acts like @GetMapping in rest degisn, where @InputArgument acts like @RequestParams
-     * One query return all object.
      * @param titleFilter
      * @return
+     * @DgsQuery acts like @GetMapping in rest degisn, where @InputArgument acts like @RequestParams
+     * One query return all object.
      */
     @DgsQuery
     public List<Show> shows(@InputArgument String titleFilter) {
@@ -41,11 +43,19 @@ public class ShowDataFetcher {
                 .collect(Collectors.toList());
     }
 
+
+    @DgsData(parentType = "Query", field = "shows")
+    public DataFetcherResult<List<Show>> show(@InputArgument String titleFilter) {
+        List<Show> shows = showService.shows();
+
+        return DataFetcherResult.newResult().data(shows).localContext()
+    }
+
     /**
+     * @return
      * @DgsData acts like @RequestMapping
      * This query can strip off complicated fields that may require some other query to do
      * I mean at this sample, actors might be stripped off.
-     * @return
      */
     @DgsData(parentType = "Query", field = "shows")
     public List<Show> shows() {
@@ -55,7 +65,7 @@ public class ShowDataFetcher {
 
     @DgsData(parentType = "Show", field = "actors")
     public List<Actor> actors(DgsDataFetchingEnvironment dgsDataFetchingEnvironment) {
-        Show show = dgsDataFetchingEnvironment.getSource();
+        Show show = dgsDataFetchingEnvironment.getSource(); // this method require there is an Id like field in entity
         return actorService.forShow(show.getTitle());
     }
 

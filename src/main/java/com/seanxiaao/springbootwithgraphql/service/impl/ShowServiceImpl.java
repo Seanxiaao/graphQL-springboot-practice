@@ -1,13 +1,11 @@
 package com.seanxiaao.springbootwithgraphql.service.impl;
 
 
-import com.seanxiaao.springbootwithgraphql.entity.Actor;
+import com.seanxiaao.springbootwithgraphql.entity.InternalShow;
 import com.seanxiaao.springbootwithgraphql.entity.Show;
 import com.seanxiaao.springbootwithgraphql.service.ShowService;
 import com.sun.tools.javac.util.List;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 
 @Service
 public class ShowServiceImpl implements ShowService {
@@ -22,4 +20,9 @@ public class ShowServiceImpl implements ShowService {
                 new Show("Orange is the New Black", 2013)
         );
     }
+
+    public List<InternalShow> internalShows() {
+        return null;
+    }
+
 }
