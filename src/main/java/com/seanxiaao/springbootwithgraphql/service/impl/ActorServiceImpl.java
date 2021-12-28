@@ -7,10 +7,8 @@ import com.seanxiaao.springbootwithgraphql.service.ShowService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,7 +17,7 @@ public class ActorServiceImpl implements ActorService {
     @Resource
     private ShowService showService;
 
-    List<Actor> actors = com.sun.tools.javac.util.List.of(
+    List<Actor> actors = Arrays.asList(
             new Actor("A", Collections.singletonList("Stranger Things")),
             new Actor("V", Arrays.asList("Stranger Things", "Ozark")),
             new Actor("L", Collections.singletonList("Ozark"))
@@ -34,4 +32,28 @@ public class ActorServiceImpl implements ActorService {
                 .contains(showName)).collect(Collectors.toList());
 
     }
+
+    @Override
+    public Map<Show, List<Actor>> actorForShows(List<Show> showNames) {
+
+        Map<Show, List<Actor>> actorMap = new HashMap<>();
+        Map<String, Show> showMap = showNames.stream().collect(Collectors.toMap(Show::getTitle, Function.identity()));
+
+        actors.forEach(actor -> {
+            List<String> actorShowNames = actor.getShowName();
+            actorShowNames.forEach(
+                    actorShowName -> {
+                        if (showMap.containsKey(actorShowName)) {
+                            Show show = showMap.get(actorShowName);
+                            actorMap.putIfAbsent(show, new ArrayList<>());
+                            actorMap.get(show).add(actor);
+                        }
+                    }
+            );
+        });
+
+        return actorMap;
+    }
+
+
 }
