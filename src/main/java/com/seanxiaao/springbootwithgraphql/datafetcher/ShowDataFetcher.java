@@ -10,10 +10,12 @@ import graphql.execution.DataFetcherResult;
 import graphql.schema.DataFetchingEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dataloader.DataLoader;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -45,10 +47,10 @@ public class ShowDataFetcher {
     }
 
     @DgsData(parentType = "Show", field = "actors")
-    public List<Actor> actors(DgsDataFetchingEnvironment dfe) {
+    public CompletableFuture<Actor> actors(DgsDataFetchingEnvironment dfe) {
         Show show = dfe.getSource();
-        Map<Show, List<Actor>> actorsForShows = dfe.getLocalContext(); // pre-loaded localContext in the above method
-        return actorsForShows.get(show);
+        DataLoader<Show, Actor> mappedBatchLoader = dfe.getDataLoader("actors");
+        return mappedBatchLoader.load(show);
     }
 
 }
