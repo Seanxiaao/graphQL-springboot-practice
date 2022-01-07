@@ -2,6 +2,8 @@ package com.seanxiaao.springbootwithgraphql.datafetcher;
 
 
 import com.netflix.graphql.dgs.*;
+import com.netflix.graphql.dgs.context.DgsContext;
+import com.seanxiaao.springbootwithgraphql.context.MyContextBuilder;
 import com.seanxiaao.springbootwithgraphql.entity.Actor;
 import com.seanxiaao.springbootwithgraphql.entity.Show;
 import com.seanxiaao.springbootwithgraphql.service.ActorService;
@@ -44,6 +46,12 @@ public class ShowDataFetcher {
         } else {
             return DataFetcherResult.<List<Show>>newResult().data(shows).build();
         }
+    }
+
+    @DgsData(parentType = "Query", field = "withContext")
+    public String withContext(DataFetchingEnvironment dfe) {
+        MyContextBuilder.MyContext myContext = DgsContext.getCustomContext(dfe);
+        return  myContext.getCustomState();
     }
 
     @DgsData(parentType = "Show", field = "actors")

@@ -1,5 +1,6 @@
 type Query {
     shows(titleFilter: String): [Show]
+    withContext: String
 }
 
 type Show {
