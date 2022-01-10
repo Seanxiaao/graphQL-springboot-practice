@@ -1,7 +1,10 @@
 package com.seanxiaao.springbootwithgraphql.datafetcher;
 
 
-import com.netflix.graphql.dgs.*;
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsData;
+import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
+import com.netflix.graphql.dgs.InputArgument;
 import com.netflix.graphql.dgs.context.DgsContext;
 import com.seanxiaao.springbootwithgraphql.context.MyContextBuilder;
 import com.seanxiaao.springbootwithgraphql.entity.Actor;
@@ -12,10 +15,10 @@ import com.seanxiaao.springbootwithgraphql.service.ActorService;
 import com.seanxiaao.springbootwithgraphql.service.ShowService;
 import graphql.execution.DataFetcherResult;
 import graphql.schema.DataFetchingEnvironment;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dataloader.DataLoader;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -63,14 +66,25 @@ public class ShowDataFetcher {
 
     @DgsData(
             parentType = DgsConstants.QUERY_TYPE,
-            field = DgsConstants.SHOW.Actors
+            field = DgsConstants.QUERY.Shows
     )
     public List<Show> shows(@InputArgument(name = "titleFilter",
             collectionType = TitleFilter.class) Optional<TitleFilter> titleFilter) {
+
+        List<Show> shows = showService.shows();
+
         if (!titleFilter.isPresent()) {
-            return showService.shows();
+            return shows;
         }
-        return null;
+
+        return showService.shows().stream().filter(
+                show -> this.matchFilter(titleFilter.get().getName(), show.getTitle())
+        ).collect(Collectors.toList());
+    }
+
+    private boolean matchFilter(String titleFilter, String showName) {
+        return StringUtils.containsIgnoreCase(showName,
+                StringUtils.defaultIfBlank(titleFilter, StringUtils.EMPTY));
     }
 
 
