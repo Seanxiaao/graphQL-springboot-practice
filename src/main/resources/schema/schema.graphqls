@@ -3,6 +3,10 @@ type Query {
     withContext: String
 }
 
+type Mutation {
+    addRating(input: RatingInput): Rating
+}
+
 type Show {
     title: String
     releaseYear: Int
@@ -11,4 +15,17 @@ type Show {
 
 type Actor {
     name: String
+}
+
+input TitleFilter {
+    name: String
+}
+
+type Rating {
+    avgStars: Float
+}
+
+input RatingInput {
+    title: String
+    stars: Int
 }
